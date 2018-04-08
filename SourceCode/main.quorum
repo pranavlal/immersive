@@ -1,0 +1,119 @@
+use Libraries.Game.Game
+use Libraries.Game.Graphics.Camera
+use Libraries.Game.Graphics.Model
+use Libraries.Game.Graphics.Color
+use Libraries.Game.Graphics.AmbientLight
+use Libraries.Game.Graphics.DirectionalLight
+use Libraries.Compute.Vector3
+use Libraries.Compute.Frustum
+use Libraries.Sound.Speech
+use Libraries.Containers.Array
+use Libraries.Interface.Events.KeyboardListener
+use Libraries.Interface.Events.KeyboardEvent
+class Main is Game, KeyboardListener
+    //this line instantiates the camera
+    Camera camera = undefined
+    Model ground
+    Model trunk
+    Model tree
+    Model logo
+    Speech speech
+    Array<Model> array
+    
+    action Main
+me:SetGameName("Immersive")
+        StartGame()
+    end
+
+    action CreateGame
+        //this line gives the camera additional necessary information
+        camera = GetCamera3D()
+        //these lines give the camera an initial position and direction
+        camera:SetPosition(0, 100, -200)
+        camera:LookAt(0, 0, 0)
+        //this line tells increases the depth visible to the camera
+        camera:SetFar(1000)
+
+        //these lines set up the 3D world
+        Color wood
+        Color grass 
+        Color blossomPink
+        grass = grass:Green()
+        blossomPink:SetColor(1, 0.94, 0.96, 1)
+        wood:SetColor(0.54, 0.35, 0.16, 1)
+        ground:LoadCylinder(500, 0.5, 500, grass)
+        ground:SetDescription("The ground.")
+        array:Add(ground)
+        trunk:LoadCylinder(20, 100, 20, wood)
+        trunk:SetY(50)
+        trunk:SetDescription("The tree trunk.")
+        array:Add(trunk)
+        tree:LoadBox(50, 50, 50, blossomPink)
+        tree:SetY(80)
+        tree:SetDescription("The treetop.")
+        array:Add(tree)
+        logo:LoadBox(25, 25, 25, "Logo.png")
+        logo:SetPosition(-50, 12.5, -50)
+        logo:SetDescription("The box.")
+        array:Add(logo)
+
+        Add(ground)
+        Add(trunk)
+        Add(tree)
+        Add(logo)
+        
+        //these lines give our world basic lighting
+        DirectionalLight light
+        light:SetColor (0.8, 0.8, 0.8, 1)
+        light:SetDirection(-1, -4, 3)
+        Add(light)
+
+        AmbientLight ambient
+        ambient:SetColor(0.4, 0.4, 0.4, 1)
+        SetAmbientLight(ambient)
+       AddKeyboardListener(me)        
+    end
+    
+   action PressedKey(KeyboardEvent event)
+Vector3 cameraPos=camera:GetPosition()
+number z=cameraPos:GetZ()
+number x= cameraPos:GetX()
+number y = cameraPos:GetY()
+boolean kp=false
+
+   if event:keyCode = event:DOWN
+y=y-1
+kp=true
+end
+if event:keyCode = event:LEFT
+x=x-1
+kp=true
+end
+if event:keyCode = event:RIGHT
+x=x+1
+kp=true
+end
+ if event:keyCode = event:UP
+y=y-1
+kp=true
+end
+if event:keyCode = event:HOME
+z=z+1
+kp=true
+end
+if event:keyCode = event:END
+z=z-1
+kp=true
+end
+if event:keyCode = event:ESCAPE
+me:Exit()
+end
+if kp=true
+camera:Move(x,y,z)
+kp=false
+end
+
+end //end of routine    
+        
+
+end //end of class
