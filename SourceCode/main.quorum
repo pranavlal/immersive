@@ -4,13 +4,15 @@ use Libraries.Game.Graphics.Model
 use Libraries.Game.Graphics.Color
 use Libraries.Game.Graphics.AmbientLight
 use Libraries.Game.Graphics.DirectionalLight
+use Libraries.Interface.Events.CollisionListener3D
+use Libraries.Interface.Events.CollisionEvent3D
 use Libraries.Compute.Vector3
 use Libraries.Compute.Frustum
 use Libraries.Sound.Speech
 use Libraries.Containers.Array
 use Libraries.Interface.Events.KeyboardListener
 use Libraries.Interface.Events.KeyboardEvent
-class Main is Game, KeyboardListener
+class Main is Game, KeyboardListener, CollisionListener3D
     //this line instantiates the camera
     Camera camera = undefined
     Model ground
@@ -31,7 +33,7 @@ me:SetGameName("Immersive")
         //these lines give the camera an initial position and direction
         camera:SetPosition(0, 100, -200)
         camera:LookAt(0, 0, 0)
-        //this line tells increases the depth visible to the camera
+        //this line increases the depth visible to the camera
         camera:SetFar(1000)
 
         //these lines set up the 3D world
@@ -56,7 +58,15 @@ me:SetGameName("Immersive")
         logo:SetPosition(-50, 12.5, -50)
         logo:SetDescription("The box.")
         array:Add(logo)
-
+EnablePhysics3D(true)
+ground:EnablePhysics(true)
+ground:SetUnmovable()
+tree:EnablePhysics(true)
+trunk:EnablePhysics(true)
+tree:SetResponsive()
+trunk:SetResponsive()
+           SetGravity3D(0, -10, 0)
+AddCollisionListener(me)
         Add(ground)
         Add(trunk)
         Add(tree)
@@ -73,14 +83,17 @@ me:SetGameName("Immersive")
         SetAmbientLight(ambient)
        AddKeyboardListener(me)        
     end
-    
-   action PressedKey(KeyboardEvent event)
+       action BeginCollision(CollisionEvent3D event)
+camera:SetPosition(0, 100, -200)
+speech:Say("ouch")
+end   
+action PressedKey(KeyboardEvent event)
 Vector3 cameraPos=camera:GetPosition()
 number z=cameraPos:GetZ()
 number x= cameraPos:GetX()
 number y = cameraPos:GetY()
 boolean kp=false
-
+check
    if event:keyCode = event:DOWN
 y=y-1
 kp=true
@@ -112,7 +125,12 @@ if kp=true
 camera:Move(x,y,z)
 kp=false
 end
+detect xx is Error
 
+speech:Say("error. "+xx:GetErrorMessage())
+output(xx:GetErrorMessage())
+me:Exit()
+end  
 end //end of routine    
         
 
