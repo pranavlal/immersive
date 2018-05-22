@@ -1,8 +1,10 @@
-use Libraries.Game.Game
+       use Libraries.Game.Game
 use Libraries.Game.Graphics.Camera
 use Libraries.Game.Graphics.Model
 use Libraries.Game.Graphics.Color
 use Libraries.Game.Graphics.AmbientLight
+use Libraries.Game.Collision.Shapes.Box
+use Libraries.Interface.Item3D
 use Libraries.Game.Graphics.DirectionalLight
 use Libraries.Interface.Events.CollisionListener3D
 use Libraries.Interface.Events.CollisionEvent3D
@@ -15,7 +17,8 @@ use Libraries.Interface.Events.KeyboardEvent
 class Main is Game, KeyboardListener, CollisionListener3D
     //this line instantiates the camera
     Camera camera = undefined
-    Model ground
+Item3D camTracker
+Model ground
     Model trunk
     Model tree
     Model logo
@@ -28,7 +31,8 @@ me:SetGameName("Immersive")
     end
 
     action CreateGame
-        //this line gives the camera additional necessary information
+check        
+//this line gives the camera additional necessary information
         camera = GetCamera3D()
         //these lines give the camera an initial position and direction
         camera:SetPosition(0, 100, -200)
@@ -36,6 +40,9 @@ me:SetGameName("Immersive")
         //this line increases the depth visible to the camera
         camera:SetFar(1000)
 
+camTracker:SetPosition(0, 100, -200)
+Box camTrackerBox
+camTracker:SetShape(camTrackerBox)
         //these lines set up the 3D world
         Color wood
         Color grass 
@@ -66,6 +73,8 @@ trunk:EnablePhysics(true)
 tree:SetResponsive()
 trunk:SetResponsive()
            SetGravity3D(0, -10, 0)
+camTracker:EnablePhysics(true)
+camTracker:SetResponsive()
 AddCollisionListener(me)
         Add(ground)
         Add(trunk)
@@ -82,9 +91,16 @@ AddCollisionListener(me)
         ambient:SetColor(0.4, 0.4, 0.4, 1)
         SetAmbientLight(ambient)
        AddKeyboardListener(me)        
-    end
+detect err is Error
+output("initialization error. "+err:GetErrorMessage())
+
+speech:Say("init error. "+err:GetErrorMessage())
+me:Exit()
+end    
+end
        action BeginCollision(CollisionEvent3D event)
 camera:SetPosition(0, 100, -200)
+camTracker:SetPosition(0, 100, -200)
 speech:Say("ouch")
 end   
 action PressedKey(KeyboardEvent event)
@@ -123,6 +139,7 @@ me:Exit()
 end
 if kp=true
 camera:Move(x,y,z)
+camTracker:Move(x,y,z)
 kp=false
 end
 detect xx is Error
