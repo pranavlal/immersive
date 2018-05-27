@@ -27,7 +27,8 @@ Model ground
     
     action Main
 me:SetGameName("Immersive")
-        StartGame()
+UseDesktopResolution()        
+StartGame()
     end
 
     action CreateGame
@@ -53,7 +54,7 @@ camTracker:SetShape(camTrackerBox)
         ground:LoadCylinder(500, 0.5, 500, grass)
         ground:SetDescription("The ground.")
         array:Add(ground)
-        trunk:LoadCylinder(20, 100, 20, wood)
+        trunk:LoadCylinder(100, 400, 20, wood)
         trunk:SetY(50)
         trunk:SetDescription("The tree trunk.")
         array:Add(trunk)
@@ -98,7 +99,26 @@ speech:Say("init error. "+err:GetErrorMessage())
 me:Exit()
 end    
 end
-       action BeginCollision(CollisionEvent3D event)
+action isOnScreen(number x, number y) returns boolean
+integer l=0
+boolean isOK=true
+
+if x>me:GetScreenWidth()
+l=1
+end
+
+if y>me:GetScreenHeight()
+l=1
+end
+if x<0
+l=1
+end
+if l>0
+isOK=false
+end
+return isOK
+end       
+action BeginCollision(CollisionEvent3D event)
 camera:SetPosition(0, 100, -200)
 camTracker:SetPosition(0, 100, -200)
 speech:Say("ouch")
@@ -138,8 +158,10 @@ if event:keyCode = event:ESCAPE
 me:Exit()
 end
 if kp=true
+if isOnScreen(x,y)=true
 camera:Move(x,y,z)
 camTracker:Move(x,y,z)
+end
 kp=false
 end
 detect xx is Error
